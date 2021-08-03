@@ -1,0 +1,89 @@
+﻿@model IEnumerable<ProviderViewModel>
+
+@{
+    ViewData["Title"] = "Provider";
+}
+<h1>Providers</h1>
+
+<p>
+    <a asp-action="Create">Create Provider</a>
+</p>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Group)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+                <a id="filter" style="cursor:pointer">
+                    <img src="~/fontawesome/sort-solid.svg" style="width:10px" />
+                </a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Group.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateDate)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#filter").click(function () {
+                $.ajax({
+                    url: 'Provider/Filter',
+                    type: 'Get',
+                    dataType: 'JSON',
+                    success: function (data) {
+                        console.log(data);
+                        var trHTML = '';
+                        $.each(data, function (i, provider) {
+                            trHTML += '<tr><td>' + provider.type + '</td><td>' + provider.name + '</td><td>' + provider.group.name + '</td><td>' + formatJSONDate(provider.createDate) + '</td><td><a href="Provider/Edit/' + provider.id + '">Edit</a> | '
+                                + '<a href="Provider/Details/' + provider.id + '">Details</a> | '
+                                + '<a href="Provider/Delete/' + provider.id + '">Delete</a></td></tr>';
+                        });
+                        $('tbody').html(trHTML);
+                    }
+                });
+
+
+            })
+        })
+        function formatJSONDate(jsonDate) {
+            console.log(jsonDate);
+            var newDate = jsonDate.toString("dd/mm/yyyy").split('T')[0];
+            return newDate;
+        }
+
+    </script>
+}
